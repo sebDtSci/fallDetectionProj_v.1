@@ -9,17 +9,15 @@
 from ultralytics import YOLO
 import cv2
 
-# Load a model
-model = YOLO('yolov8s-pose.pt',task="pose")  # pretrained YOLOv8n model
+model = YOLO('yolov8s-pose.pt',task="pose") 
 
-# Open the video file
 results = model("0", stream=True,save=True,imgsz=640)
 frame=1
 fall=0
 for result in results:
     img = result.orig_img
     try:
-        boxes = result.boxes  # Boxes object for bbox outputs
+        boxes = result.boxes  
         for box in boxes:
             x = boxes.xywh[0][0]
             y = boxes.xywh[0][1]
@@ -31,13 +29,13 @@ for result in results:
                 keypoint = kpts.xy[0, i]
                 x, y = int(keypoint[0].item()), int(keypoint[1].item())
                 #Draw keypoints on img
-                cv2.circle(img, (x, y), 5, (0, 255, 0), -1)  # Draw a green circle at each keypoint location
+                cv2.circle(img, (x, y), 5, (0, 255, 0), -1)
 
             if w/h > 1.4:
                 fall+=1
                 print("Fall detected at {} frame".format(frame))
                 
-                #Print fall on top of persons head
+                #Print fall on top of persons head (Fucking important to see fall!!!!!)
                 cv2.putText(img, "Fallen", (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
                 
@@ -45,13 +43,13 @@ for result in results:
                 cv2.putText(img, "Stable", (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             cv2.imwrite("frames/frame_{:04d}.jpg".format(frame), img)  # Use zero-padding with 4 digits
 
-        cv2.imshow('Image', img)  # Affiche l'image traitée dans une fenêtre
+        cv2.imshow('Image', img)  
         cv2.waitKey(1)
     except:
         pass
     cv2.imwrite("frames/frame_{:04d}.jpg".format(frame), img)  # Use zero-padding with 4 digits
     frame += 1
 
-cv2.destroyAllWindows()  # Ferme toutes les fenêtres OpenCV ouvertes après la boucle
+cv2.destroyAllWindows() 
 print("Total fall detected: {}".format(fall))
 
