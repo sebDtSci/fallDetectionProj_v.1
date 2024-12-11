@@ -11,9 +11,10 @@ import cv2
 
 model = YOLO('yolov8s-pose.pt',task="pose") 
 
-results = model("0", stream=True,save=True,imgsz=640)
+results = model("0", stream=True, save=True, imgsz=640)
 frame=1
 fall=0
+
 for result in results:
     img = result.orig_img
     try:
